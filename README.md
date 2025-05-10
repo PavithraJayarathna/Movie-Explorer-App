@@ -1,6 +1,6 @@
-# CINEAPP - Movie Explorer App
+# MOVIEEXPLORER - Movie Explorer App
 
-CINEAPP is a modern movie browser and search platform built using React. Users can sign up, log in, search for movies, and manage their own list. It integrates with a backend server and uses Axios for all HTTP requests.
+MOVIEEXPLORER is a modern movie browser and search platform built using React. Users can sign up, log in, search for movies, and manage their own list. It integrates with a backend server and uses Axios for all HTTP requests.
 
 ---
 
