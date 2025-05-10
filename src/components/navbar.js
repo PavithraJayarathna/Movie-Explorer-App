@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaSearch } from "react-icons/fa";
+import axios from 'axios';
 
 const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
-  const [user, setUser] = useState(localStorage.getItem("user") || null); // ✅ Load user from localStorage
+  const [user, setUser] = useState(localStorage.getItem("user") || null);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -15,7 +16,6 @@ const Navbar = () => {
 
   const navigate = useNavigate();
 
-  // ✅ Load user from localStorage when component mounts
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -34,21 +34,17 @@ const Navbar = () => {
         return;
       }
       try {
-        const response = await fetch("http://localhost:3000/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, username, password }),
+        const response = await axios.post("http://localhost:3000/signup", {
+          email,
+          username,
+          password,
         });
 
-        const data = await response.json();
-        if (response.ok) {
-          alert("Signup successful! Please log in.");
-          setIsSignup(false);
-        } else {
-          alert(data.message || "Signup failed");
-        }
+        alert("Signup successful! Please log in.");
+        setIsSignup(false);
       } catch (error) {
-        alert("An error occurred. Please try again.");
+        const message = error.response?.data?.message || "Signup failed";
+        alert(message);
       }
     } else {
       if (!email || !password) {
@@ -56,28 +52,24 @@ const Navbar = () => {
         return;
       }
       try {
-        const response = await fetch("http://localhost:3000/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+        const response = await axios.post("http://localhost:3000/login", {
+          email,
+          password,
         });
 
-        const data = await response.json();
-        if (response.ok) {
-          localStorage.setItem("user", data.user.username); // 
-          setUser(data.user.username);
-          setIsModalOpen(false);
-        } else {
-          alert(data.message || "Login failed");
-        }
+        const { user: userData } = response.data;
+        localStorage.setItem("user", userData.username);
+        setUser(userData.username);
+        setIsModalOpen(false);
       } catch (error) {
-        alert("An error occurred. Please try again.");
+        const message = error.response?.data?.message || "Login failed";
+        alert(message);
       }
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user"); // 
+    localStorage.removeItem("user");
     setUser(null);
     setDropdownOpen(false);
   };
@@ -91,10 +83,10 @@ const Navbar = () => {
   return (
     <>
       <nav className="bg-[#161f2e] text-white sticky top-0 z-50 shadow-lg">
-        <div className="px-6 mx-auto max-w-7xl">
+        <div className="px-12 mx-auto max-w-10xl">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="text-2xl font-semibold tracking-widest text-yellow-500">
-              CINE<span className="text-white">APP</span>
+              MOVIE<span className="text-white">EXPLORER</span>
             </Link>
 
             <div className="relative w-full max-w-md">
@@ -132,7 +124,6 @@ const Navbar = () => {
                       </button>
                     </div>
                   )}
-
                 </div>
               ) : (
                 <>
@@ -213,3 +204,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
